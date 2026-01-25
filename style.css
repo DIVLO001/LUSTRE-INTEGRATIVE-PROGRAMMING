@@ -1,47 +1,276 @@
+/* --- RESET & BASICS --- */
+:root {
+  --neon-green: #cceb45;
+  --bg-dark: #050505;
+  --text-grey: #a1a1a1;
+  --font-main: 'Inter', sans-serif;
+  --font-display: 'Open Sauce One', sans-serif;
+}
+
 body {
-  background-color: rgb(22, 22, 22);
-  margin: 0;
-  padding: 20px;
-}
-
-.head {
-  color: #cceb45;
-  text-align: center;
-  font-size: 15px;
-  font-family: Helvetica, Arial, sans-serif;
-  margin: 40px 0;
-}
-
-.Lorem {
+  background-color: var(--bg-dark);
   color: white;
-  text-align: justify;
-  text-align-last: justify;
-  font-family: Helvetica, Arial, sans-serif; 
-  font-size: 80px;
-  max-width: 1000px;
-  margin: 0 auto;
-  line-height: 1.8;
-  padding: 0 20px;
-  text-transform: uppercase;  
-  letter-spacing: -5px;  
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-main);
+  overflow-x: hidden;
+  cursor: none; 
 }
 
-.gbuttons {
-  text-align: center;
-  margin-top: 40px;
+a, button, .nav-links span, .square-card {
+  cursor: none; 
+}
+
+/* --- CUSTOM CURSOR STYLES --- */
+.cursor-dot {
+  width: 6px; height: 6px;
+  background-color: var(--neon-green);
+  border-radius: 50%;
+  position: fixed;
+  top: 0; left: 0;
+  z-index: 9999;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+.cursor-lens {
+  width: 50px; height: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  position: fixed;
+  top: 0; left: 0;
+  z-index: 9998;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.01);
+  transition: width 0.3s, height 0.3s, background-color 0.3s, border-color 0.3s;
+}
+
+body.hovering .cursor-lens {
+  width: 90px; height: 90px;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--neon-green);
+  box-shadow: 0 0 30px rgba(204, 235, 69, 0.2);
+}
+body.hovering .cursor-dot { opacity: 0; }
+
+/* --- BACKGROUND SETUP --- */
+.fixed-background {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100vh;
+  z-index: -10;
+  background-image: url('background.jpg'); 
+  background-size: cover;
+  background-position: center;
+}
+
+.gradient-overlay {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(to bottom, rgba(5,5,5,0.4) 0%, rgba(5,5,5,0.95) 85%, #050505 100%);
+}
+
+.bg-grid {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  z-index: -5;
+  pointer-events: none;
+}
+
+/* --- NAVIGATION --- */
+nav {
+  display: flex;
+  justify-content: space-between;
+  padding: 30px 60px;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+}
+
+.logo img { height: 100px; width: auto; display: block; }
+
+.nav-links span {
+  margin-left: 40px;
+  color: var(--text-grey);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+}
+
+.nav-links span:hover {
+  color: #fff;
+  text-shadow: 0 0 10px var(--neon-green);
+}
+
+/* --- HERO SECTION --- */
+.hero {
+  display: flex;
+  align-items: center;
+  min-height: 80vh;
+  padding: 0 60px;
+  max-width: 1200px;
+  position: relative;
+  z-index: 2;
+}
+
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: 5rem;
+  line-height: 0.9;
+  margin: 0 0 25px 0;
+  letter-spacing: -2px;
+  background: linear-gradient(180deg, #fff, #888);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-sub {
+  color: var(--text-grey);
+  font-size: 1.1rem;
+  line-height: 1.6;
+  max-width: 400px;
+  margin-bottom: 40px;
 }
 
 .save {
-  background-color: #cceb45;
-  color: black;
-  font-family: Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  font-weight: 600;
-  padding: 12px 30px;
-  border: none;
-  border-radius: 5px;
+  background-color: transparent;
+  color: var(--neon-green);
+  padding: 18px 45px;
+  border: 1px solid var(--neon-green);
+  border-radius: 50px;
+  transition: all 0.4s ease;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
 .save:hover {
-  background-color: #ffffff;
+  background-color: var(--neon-green);
+  color: black;
+  box-shadow: 0 0 40px rgba(204, 235, 69, 0.4);
+}
+
+/* --- GALLERY SECTION --- */
+.gallery {
+  padding: 100px 60px;
+  position: relative;
+  z-index: 5;
+  background-color: var(--bg-dark); 
+  border-top: 1px solid #1a1a1a;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 50px;
+}
+
+.section-header h2 {
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+  color: white;
+  margin-right: 20px;
+}
+
+.section-header .line { height: 1px; width: 100%; background: #333; }
+
+.square-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 30px;
+}
+
+.square-card {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background-color: #111;
+  border: 1px solid #222;
+  border-radius: 8px;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.5s cubic-bezier(0.2, 1, 0.3, 1), border-color 0.3s;
+}
+
+.project-label {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.3);
+  z-index: 2;
+}
+
+.square-card:hover {
+  border-color: var(--neon-green);
+}
+
+.overlay {
+  position: absolute; bottom: 0; left: 0; width: 100%;
+  padding: 30px;
+  background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.square-card:hover .overlay { transform: translateY(0); opacity: 1; }
+
+/* --- PROJECT 8 SPECIFIC (SEE MORE) --- */
+.project-8 {
+  background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('project8.jpg') !important;
+  /* Above line adds a dark tint to ensure the 30% visibility look */
+  opacity: 0.6; /* Overall card starts slightly dimmed */
+  transition: opacity 0.3s ease, transform 0.5s cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+.project-8:hover {
+  opacity: 1;
+}
+
+.see-more-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  width: 100%;
+}
+
+.see-more-content h3 {
+  font-family: var(--font-display);
+  color: white
+  font-size: 1.5rem;
+  letter-spacing: 1px;
+}
+
+/* --- PROJECT IMAGES --- */
+.project-1 { background-image: url('project1.jpg'); }
+.project-2 { background-image: url('project2.jpg'); }
+.project-3 { background-image: url('project3.jpg'); }
+.project-4 { background-image: url('project4.jpg'); }
+.project-5 { background-image: url('project5.jpg'); }
+.project-6 { background-image: url('project6.jpg'); }
+.project-7 { background-image: url('project7.jpg'); }
+.project-8 { background-image: url('project8.jpg'); }
+
+footer {
+  padding: 40px 60px;
+  background-color: var(--bg-dark);
+  border-top: 1px solid #222;
+  color: #444;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 768px) {
+  .hero h1 { font-size: 3rem; }
+  nav, .gallery, .hero { padding: 20px; }
+  .square-grid { grid-template-columns: 1fr; }
 }
