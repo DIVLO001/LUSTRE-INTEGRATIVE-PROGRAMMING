@@ -29,13 +29,13 @@ function animateCursor() {
 }
 animateCursor();
 
-/* --- HOVER DETECTION --- */
-const interactables = document.querySelectorAll('a, button, .nav-links span, .square-card');
+/* --- HOVER DETECTION & CURSOR MANAGEMENT --- */
+const interactables = document.querySelectorAll('a, button, .nav-links span, .square-card, .toggle-password');
+const authCard = document.querySelector('.auth-card');
 
 interactables.forEach(el => {
     el.addEventListener('mouseenter', () => {
         document.body.classList.add('hovering');
-        // Apply transform to cards on hover
         if (el.classList.contains('square-card')) {
             el.style.transform = 'scale(1.02) translateY(-5px)';
         }
@@ -43,9 +43,36 @@ interactables.forEach(el => {
 
     el.addEventListener('mouseleave', () => {
         document.body.classList.remove('hovering');
-        // Reset transform
         if (el.classList.contains('square-card')) {
             el.style.transform = 'scale(1) translateY(0)';
         }
     });
 });
+
+/* DETECT IF HOVERING FORM TO SWITCH CURSORS */
+if (authCard) {
+    authCard.addEventListener('mouseenter', () => {
+        // Add class to body to hide custom cursor and show default
+        document.body.classList.add('form-mode');
+    });
+
+    authCard.addEventListener('mouseleave', () => {
+        // Remove class to show custom cursor again
+        document.body.classList.remove('form-mode');
+    });
+}
+
+/* --- PASSWORD VISIBILITY TOGGLE --- */
+function togglePassword(inputId, toggleBtn) {
+    const input = document.getElementById(inputId);
+    
+    if (input.type === "password") {
+        input.type = "text";
+        toggleBtn.textContent = "HIDE";
+        toggleBtn.style.color = "var(--neon-green)";
+    } else {
+        input.type = "password";
+        toggleBtn.textContent = "SHOW";
+        toggleBtn.style.color = "#666";
+    }
+}   
