@@ -1,21 +1,25 @@
-LUSTRE | Design Portfolio
+# ACTIVITY 1 January 21,2026
 
-LUSTRE is a high-end visual identity landing page designed for a graphic designer based in Bohol. It serves as a digital showroom for professional branding, print layouts, and futuristic visual systems. The project solves the problem of "boring" portfolios by using a brutalist, high-contrast aesthetic to instantly capture the attention of potential creative clients.
+🔹 BEYOND Landing Page.
 
-* HTML5
-* CSS3
+🔹 Description
+BEYOND is a community-focused landing page for "The Visual Collective," designed to connect global visionaries in branding, print, and digital art. It serves as a promotional hub for sharing resources (like the Adobe Creative Suite) and showcasing avant-garde visual works. The project solves the problem of isolation in the creative field by offering a centralized, high-contrast digital space for collaboration and portfolio display.
+
+🔹 Technologies Used
+* HTML
+* CSS
 * JavaScript
 
+🔹 Features
+* Featured Works Gallery: A responsive grid layout displaying poster designs and products (e.g., "Pretty Women," "Off White™ for Nike") with a clear hierarchy.
+* Interactive Hover Effects: Dynamic overlays on project cards that reveal numbers and details (01–08) upon user interaction.
+* Community CTA: A dedicated "Get Started" call-to-action section inviting users to join the collective and access shared tools.
 
-Custom Ghost Cursor: A dual-element cursor (dot and lens) with smooth lag-interpolation for a high-tech feel.
-Interactive Project Grid: A responsive masonry-style grid featuring hover-reveal overlays for project details.
-Dynamic Background: A fixed-position image layer combined with a CSS grid overlay for depth and texture.
+🔹 AI Assistance Disclosure (Required)
+Did you use AI tools? Yes
 
-## AI Assistance Disclosure (Required)
-*Did you use AI tools?* Yes
+Details:
+I used Gemini to help structure the custom JavaScript cursor logic (specifically the interpolation math for the lens) and to debug the specific opacity requirements for the "See More" project card. I used Claude to refine my program and to structure the design layout. All the layout ideas and styling are by me.
 
-**Details:**
-I used Gemini to help structure the custom JavaScript cursor logic (specifically the interpolation math for the lens) and to debug the specific opacity requirements for the "See More" project card. I used claude to refine my program and to structure the design I want. All the layout ideas, and styling are by me. 
-
-## Learning Reflection (Short)
-I learned how to put images and to put color backgrounds, and also how to do mouse hover effects. The most challenging part was to balance out the style of the see more card.
+🔹 Learning Reflection (Short)
+I learned how to effectively place images, set background colors, and implement CSS mouse hover effects to enhance user interaction. The most challenging part was balancing the style of the "See More" card to ensure it fit seamlessly with the rest of the grid.
