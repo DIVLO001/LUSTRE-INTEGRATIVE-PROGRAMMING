@@ -6,8 +6,8 @@
 BEYOND is a community-focused landing page for "The Visual Collective," designed to connect global visionaries in branding, print, and digital art. It serves as a promotional hub for sharing resources (like the Adobe Creative Suite) and showcasing avant-garde visual works. The project solves the problem of isolation in the creative field by offering a centralized, high-contrast digital space for collaboration and portfolio display.
 
 🔹 Technologies Used
-* HTML
-* CSS
+* HTML5
+* CSS3
 * JavaScript
 
 🔹 Features
