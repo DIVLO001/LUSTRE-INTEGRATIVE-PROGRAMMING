@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LUSTRE | Settings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Open+Sauce+One:wght@300;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-lens"></div>
+
+    <div class="fixed-background">
+      <div class="gradient-overlay"></div>
+    </div>
+    <div class="bg-grid"></div>
+
+    <nav>
+      <div class="logo">
+        <a href="index.html"><img src="logo.png" alt="LUSTRE Logo"></a>
+      </div>
+      <div class="nav-links">
+        <a href="profile.html" class="nav-item">← Back to Profile</a>
+      </div>
+    </nav>
+
+    <section class="settings-section">
+      <div class="settings-container">
+        
+        <div class="settings-header">
+          <h1>SETTINGS</h1>
+          <p>Configure your account preferences</p>
+        </div>
+
+        <!-- Account Settings Card -->
+        <div class="settings-card">
+          <div class="settings-card-header">
+            <h2>ACCOUNT SETTINGS</h2>
+            <div class="line"></div>
+          </div>
+
+          <form class="settings-form">
+            <div class="form-group">
+              <label for="settings-email">Change Email</label>
+              <input type="email" id="settings-email" placeholder="vincent.alegre@lustre.design" autocomplete="off">
+              <span class="field-note">This field will be synchronized with an external identity provider in later phases.</span>
+            </div>
+
+            <div class="form-group">
+              <label for="settings-address">Change Address</label>
+              <input type="text" id="settings-address" placeholder="Tagbilaran City, Bohol, Philippines" autocomplete="off">
+              <span class="field-note">Geographic data binding will be introduced in future builds.</span>
+            </div>
+
+            <div class="form-group">
+              <label for="settings-current-password">Current Password</label>
+              <input type="password" id="settings-current-password" placeholder="••••••••">
+            </div>
+
+            <div class="form-group">
+              <label for="settings-new-password">New Password</label>
+              <input type="password" id="settings-new-password" placeholder="••••••••">
+              <span class="field-note">Argon2id hashing with memory-hard parameters will be activated in future builds.</span>
+            </div>
+
+            <div class="form-group">
+              <label for="settings-confirm-password">Confirm New Password</label>
+              <input type="password" id="settings-confirm-password" placeholder="••••••••">
+            </div>
+          </form>
+        </div>
+
+        <!-- Preferences Card -->
+        <div class="settings-card">
+          <div class="settings-card-header">
+            <h2>PREFERENCES</h2>
+            <div class="line"></div>
+          </div>
+
+          <form class="settings-form">
+            <div class="form-group">
+              <label for="theme-select">Interface Theme</label>
+              <select id="theme-select" class="settings-select">
+                <option value="dark">Dark Mode (Current)</option>
+                <option value="light">Light Mode</option>
+                <option value="auto">Auto (System Default)</option>
+              </select>
+            </div>
+
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" id="notifications" checked>
+                <span class="checkbox-text">Enable Email Notifications</span>
+              </label>
+            </div>
+
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" id="project-updates">
+                <span class="checkbox-text">Receive Project Updates</span>
+              </label>
+            </div>
+
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" id="marketing">
+                <span class="checkbox-text">Marketing Communications</span>
+              </label>
+            </div>
+          </form>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="settings-actions">
+          <button type="button" class="save settings-save-btn">SAVE CHANGES</button>
+          <a href="profile.html" class="cancel-btn">CANCEL</a>
+        </div>
+
+      </div>
+    </section>
+
+    <footer>
+      <p>© 2026 BEYOND. Designed in Bohol.</p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
