@@ -42,3 +42,35 @@ Consistent Custom Cursor: Ghost cursor system (dot + lens) works across all page
 🔹 AI Assistance Disclosure (Required) Did you use AI tools? Yes
 Details: I used Claude to help me with structuring the code and linking the pages together for proper navigation flow. All design ideas, styling decisions, color schemes, and refinements are by me.
 🔹 Learning Reflection (Short) I learned how to create consistent navigation flows across multiple pages and maintain design cohesion using shared CSS variables. The most challenging part was implementing the glass-morphism effect while keeping text readable against the dynamic background. I gained experience in structuring dashboard-style layouts with card components and form elements.
+
+---
+
+# Validation Rule ACTIVITY March 4, 2026
+
+🔹 Client-Side Form Validation
+
+🔹 Description
+Extended the LUSTRE portfolio project by implementing client-side validation across the Login, Sign Up, and Settings pages using vanilla JavaScript. The validation prevents form submission when required fields are empty or incorrectly formatted, and provides real-time inline feedback to guide the user. All logic was added to the existing `script.js` file without introducing any external libraries, keeping the project lightweight and consistent with its previous structure.
+
+🔹 Technologies Used
+* HTML5
+* CSS3
+* JavaScript
+
+🔹 Features
+* Login Validation: Checks that the email field is present and properly formatted, and that the password field is not empty before allowing navigation to the profile page.
+* Sign Up Validation: Validates name (minimum 2 characters), email format, password strength (minimum 8 characters, at least 1 uppercase letter, at least 1 number), and confirm password match.
+* Settings Validation: Email is validated only when a value is entered. If any password field is touched, all three (current, new, confirm) become required and are checked for strength and match.
+* Inline Error Messages: Red error text appears beneath each invalid field in uppercase with letter-spacing, consistent with the site's design language.
+* Success State: Valid fields turn neon green to give positive confirmation.
+* Toast Notifications: A sliding toast message appears at the bottom of the screen for both error and success states.
+* Blur-based Live Feedback: Validation triggers as users tab between fields, not just on submit.
+
+🔹 AI Assistance Disclosure (Required)
+Did you use AI tools? Yes
+
+Details:
+I used Claude to help implement the validation logic in `script.js` and wire up the submit buttons in `login.html`, `signup.html`, and `settings.html`. All design decisions, the overall aesthetic, and the site structure are by me.
+
+🔹 Learning Reflection (Short)
+I learned how to intercept form submission events in JavaScript and provide meaningful feedback without reloading the page. The most challenging part was making the validation modular across multiple pages while keeping everything in a single `script.js` file. I also gained experience in designing error states that feel consistent with an existing visual system rather than just using default browser alerts.
