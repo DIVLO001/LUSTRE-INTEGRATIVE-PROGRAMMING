@@ -74,7 +74,6 @@ I used Claude to help implement the validation logic in `script.js` and wire up 
 
 🔹 Learning Reflection (Short)
 I learned how to intercept form submission events in JavaScript and provide meaningful feedback without reloading the page. The most challenging part was making the validation modular across multiple pages while keeping everything in a single `script.js` file. I also gained experience in designing error states that feel consistent with an existing visual system rather than just using default browser alerts.
-<<<<<<< HEAD
 
 ---
 
@@ -106,5 +105,3 @@ I used Claude to help build the admin pages and wire up the role-based routing l
 
 🔹 Learning Reflection (Short)
 I learned how to implement a basic role-based access control pattern using `sessionStorage` and how to protect pages with an access guard in vanilla JavaScript. The most challenging part was keeping the admin pages visually consistent with the existing design system while introducing new table and form components. I also gained experience in building dynamic table management with animated row insertion and deletion.
-=======
->>>>>>> 7e8900cb16cb07e69a1b2a1f121a47351d403eea
