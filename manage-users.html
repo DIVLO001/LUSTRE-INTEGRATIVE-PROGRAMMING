@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LUSTRE | Manage Users</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Open+Sauce+One:wght@300;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
+
+    <style>
+      /* --- CONFIRM DIALOG --- */
+      .confirm-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.7);
+        backdrop-filter: blur(6px);
+        z-index: 99990;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+        pointer-events: none;
+      }
+      .confirm-overlay.active {
+        opacity: 1;
+        pointer-events: all;
+      }
+      .confirm-box {
+        background: #0a0a0a;
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 1px;
+        padding: 45px 50px;
+        max-width: 420px;
+        width: 90%;
+        position: relative;
+        transform: translateY(16px);
+        transition: transform 0.25s ease;
+        text-align: center;
+      }
+      .confirm-overlay.active .confirm-box {
+        transform: translateY(0);
+      }
+      .confirm-box::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 2px;
+        background: linear-gradient(90deg, transparent, #ff4d4d, transparent);
+      }
+      .confirm-icon {
+        font-size: 2rem;
+        margin-bottom: 20px;
+        display: block;
+      }
+      .confirm-box h3 {
+        font-family: 'Open Sauce One', sans-serif;
+        font-size: 1.3rem;
+        color: white;
+        margin: 0 0 10px 0;
+        letter-spacing: -0.5px;
+      }
+      .confirm-box p {
+        color: #a1a1a1;
+        font-size: 0.85rem;
+        margin: 0 0 35px 0;
+        line-height: 1.6;
+      }
+      .confirm-box p strong {
+        color: white;
+      }
+      .confirm-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+      }
+      .confirm-delete-btn {
+        background: transparent;
+        color: #ff4d4d;
+        border: 1px solid #ff4d4d;
+        padding: 13px 30px;
+        border-radius: 1px;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.72rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex: 1;
+      }
+      .confirm-delete-btn:hover {
+        background: rgba(255,77,77,0.15);
+        box-shadow: 0 0 20px rgba(255,77,77,0.2);
+      }
+      .confirm-cancel-btn {
+        background: transparent;
+        color: #a1a1a1;
+        border: 1px solid #333;
+        padding: 13px 30px;
+        border-radius: 1px;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.72rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex: 1;
+      }
+      .confirm-cancel-btn:hover {
+        border-color: white;
+        color: white;
+      }
+
+      /* --- UNDO TOAST --- */
+      .undo-toast {
+        position: fixed;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%) translateY(20px);
+        background: rgba(10,10,10,0.95);
+        border: 1px solid rgba(255,255,255,0.12);
+        color: white;
+        padding: 14px 20px 16px 24px;
+        font-size: 0.75rem;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        font-family: 'Inter', sans-serif;
+        border-radius: 1px;
+        z-index: 99999;
+        opacity: 0;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        backdrop-filter: blur(10px);
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+      .undo-toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+      .undo-toast-text {
+        color: #a1a1a1;
+      }
+      .undo-toast-text strong {
+        color: white;
+      }
+      .undo-btn {
+        background: transparent;
+        border: 1px solid #cceb45;
+        color: #cceb45;
+        padding: 6px 16px;
+        border-radius: 1px;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.65rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        flex-shrink: 0;
+      }
+      .undo-btn:hover {
+        background: rgba(204,235,69,0.15);
+      }
+      .undo-timer-bar {
+        position: absolute;
+        bottom: 0; left: 0;
+        height: 2px;
+        background: #cceb45;
+        width: 100%;
+        transform-origin: left;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-lens"></div>
+
+    <div class="fixed-background">
+      <div class="gradient-overlay"></div>
+    </div>
+    <div class="bg-grid"></div>
+
+    <!-- Confirm Delete Dialog -->
+    <div class="confirm-overlay" id="confirm-overlay">
+      <div class="confirm-box">
+        <span class="confirm-icon">⚠</span>
+        <h3>Delete User?</h3>
+        <p>You are about to remove <strong id="confirm-name"></strong> from the registry. You can undo this for a few seconds after deletion.</p>
+        <div class="confirm-actions">
+          <button class="confirm-cancel-btn" id="confirm-cancel">Cancel</button>
+          <button class="confirm-delete-btn" id="confirm-proceed">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Undo Toast -->
+    <div class="undo-toast" id="undo-toast">
+      <span class="undo-toast-text">Removed <strong id="undo-name"></strong></span>
+      <button class="undo-btn" id="undo-btn">↩ UNDO</button>
+      <div class="undo-timer-bar" id="undo-timer-bar"></div>
+    </div>
+
+    <nav>
+      <div class="logo">
+        <a href="index.html"><img src="logo.png" alt="LUSTRE Logo"></a>
+      </div>
+      <div class="nav-links">
+        <a href="admin.html" class="nav-item">← Dashboard</a>
+        <a href="login.html" class="nav-item" id="admin-logout">Logout</a>
+      </div>
+    </nav>
+
+    <section class="admin-section">
+      <div class="admin-container">
+
+        <div class="admin-header">
+          <div class="admin-badge">ADMIN</div>
+          <h1>MANAGE USERS</h1>
+          <p>View, add, and remove user accounts from the system.</p>
+        </div>
+
+        <!-- Add User Form -->
+        <div class="settings-card">
+          <div class="settings-card-header">
+            <h2>ADD NEW USER</h2>
+            <div class="line"></div>
+          </div>
+
+          <div class="admin-add-form">
+            <div class="admin-form-row">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label for="new-name">Name</label>
+                <input type="text" id="new-name" placeholder="FULL NAME" autocomplete="off">
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label for="new-email">Email</label>
+                <input type="email" id="new-email" placeholder="EMAIL ADDRESS" autocomplete="off">
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label for="new-role">Role</label>
+                <select id="new-role" class="settings-select">
+                  <option value="Designer">Designer</option>
+                  <option value="Editor">Editor</option>
+                  <option value="Viewer">Viewer</option>
+                  <option value="Admin">Admin</option>
+                </select>
+              </div>
+            </div>
+            <div class="admin-form-actions">
+              <button type="button" id="add-user-btn" class="save" style="border-radius: 1px;">ADD USER</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="settings-card" style="margin-top: 30px;">
+          <div class="settings-card-header">
+            <h2>USER REGISTRY</h2>
+            <div class="line"></div>
+          </div>
+
+          <div class="admin-table-wrapper">
+            <table class="admin-table" id="users-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="users-tbody">
+                <tr data-id="1">
+                  <td>LST-001</td>
+                  <td>Bianca Lustre</td>
+                  <td>hadaleilani@gmail.com</td>
+                  <td><span class="role-badge role-admin">Admin</span></td>
+                  <td><span class="status-badge status-on">Active</span></td>
+                  <td><button class="delete-btn" onclick="promptDelete(this, 'Bianca Lustre')">Delete</button></td>
+                </tr>
+                <tr data-id="2">
+                  <td>LST-002</td>
+                  <td>Ana Reyes</td>
+                  <td>ana@email.com</td>
+                  <td><span class="role-badge role-designer">Designer</span></td>
+                  <td><span class="status-badge status-on">Active</span></td>
+                  <td><button class="delete-btn" onclick="promptDelete(this, 'Ana Reyes')">Delete</button></td>
+                </tr>
+                <tr data-id="3">
+                  <td>LST-003</td>
+                  <td>Juan dela Cruz</td>
+                  <td>juan@email.com</td>
+                  <td><span class="role-badge role-editor">Editor</span></td>
+                  <td><span class="status-badge status-on">Active</span></td>
+                  <td><button class="delete-btn" onclick="promptDelete(this, 'Juan dela Cruz')">Delete</button></td>
+                </tr>
+                <tr data-id="4">
+                  <td>LST-004</td>
+                  <td>Marco Diaz</td>
+                  <td>marco@email.com</td>
+                  <td><span class="role-badge role-viewer">Viewer</span></td>
+                  <td><span class="status-badge status-off">Inactive</span></td>
+                  <td><button class="delete-btn" onclick="promptDelete(this, 'Marco Diaz')">Delete</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="admin-table-footer">
+            <span id="user-count">Showing <strong>4</strong> users</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <footer>
+      <p>© 2026 BEYOND. Designed in Bohol.</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+      // Admin access guard
+      (function() {
+        if (sessionStorage.getItem('userRole') !== 'admin') {
+          window.location.href = 'login.html';
+        }
+      })();
+
+      document.getElementById('admin-logout').addEventListener('click', function() {
+        sessionStorage.removeItem('userRole');
+      });
+
+      /* ---- STATE ---- */
+      var idCounter  = 5;
+      var pendingRow = null;
+      var pendingName = '';
+      var undoRow    = null;
+      var undoAfter  = null;
+      var undoTimer  = null;
+      var UNDO_MS    = 5000;
+
+      /* ---- COUNT ---- */
+      function updateCount() {
+        var n = document.querySelectorAll('#users-tbody tr').length;
+        document.getElementById('user-count').innerHTML = 'Showing <strong>' + n + '</strong> users';
+      }
+
+      /* ---- CONFIRM DIALOG ---- */
+      var overlay     = document.getElementById('confirm-overlay');
+      var confirmName = document.getElementById('confirm-name');
+
+      function openConfirm(row, name) {
+        pendingRow  = row;
+        pendingName = name;
+        confirmName.textContent = name;
+        overlay.classList.add('active');
+      }
+      function closeConfirm() {
+        overlay.classList.remove('active');
+        pendingRow  = null;
+        pendingName = '';
+      }
+
+      document.getElementById('confirm-cancel').addEventListener('click', closeConfirm);
+      overlay.addEventListener('click', function(e) { if (e.target === overlay) closeConfirm(); });
+
+      document.getElementById('confirm-proceed').addEventListener('click', function() {
+        var row  = pendingRow;
+        var name = pendingName;
+        closeConfirm();
+        executeDelete(row, name);
+      });
+
+      function promptDelete(btn, name) {
+        openConfirm(btn.closest('tr'), name);
+      }
+
+      /* ---- DELETE ---- */
+      function executeDelete(row, name) {
+        undoRow   = row;
+        undoAfter = row.previousElementSibling;
+
+        row.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+        row.style.opacity    = '0';
+        row.style.transform  = 'translateX(24px)';
+
+        setTimeout(function() {
+          row.remove();
+          updateCount();
+          showUndoToast(name);
+        }, 350);
+      }
+
+      /* ---- UNDO TOAST ---- */
+      var undoToast  = document.getElementById('undo-toast');
+      var undoNameEl = document.getElementById('undo-name');
+      var undoBtnEl  = document.getElementById('undo-btn');
+      var undoBarEl  = document.getElementById('undo-timer-bar');
+
+      function showUndoToast(name) {
+        clearTimeout(undoTimer);
+        undoNameEl.textContent = name;
+        undoToast.classList.add('show');
+
+        // Reset and animate the timer bar
+        undoBarEl.style.transition = 'none';
+        undoBarEl.style.transform  = 'scaleX(1)';
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            undoBarEl.style.transition = 'transform ' + UNDO_MS + 'ms linear';
+            undoBarEl.style.transform  = 'scaleX(0)';
+          });
+        });
+
+        undoTimer = setTimeout(function() {
+          undoToast.classList.remove('show');
+          undoRow   = null;
+          undoAfter = null;
+        }, UNDO_MS);
+      }
+
+      undoBtnEl.addEventListener('click', function() {
+        if (!undoRow) return;
+        clearTimeout(undoTimer);
+        undoToast.classList.remove('show');
+
+        var tbody = document.getElementById('users-tbody');
+        if (undoAfter && undoAfter.parentNode === tbody) {
+          undoAfter.insertAdjacentElement('afterend', undoRow);
+        } else {
+          tbody.insertBefore(undoRow, tbody.firstChild);
+        }
+
+        // Animate back in
+        undoRow.style.opacity    = '0';
+        undoRow.style.transform  = 'translateX(-24px)';
+        undoRow.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            undoRow.style.opacity   = '1';
+            undoRow.style.transform = 'translateX(0)';
+          });
+        });
+
+        updateCount();
+        undoRow   = null;
+        undoAfter = null;
+      });
+
+      /* ---- ADD USER ---- */
+      document.getElementById('add-user-btn').addEventListener('click', function() {
+        var nameInput  = document.getElementById('new-name');
+        var emailInput = document.getElementById('new-email');
+        var roleInput  = document.getElementById('new-role');
+        var name  = nameInput.value.trim();
+        var email = emailInput.value.trim();
+        var role  = roleInput.value;
+        var valid = true;
+
+        if (!name || name.length < 2) {
+          showError(nameInput, 'Name must be at least 2 characters'); valid = false;
+        } else { showSuccess(nameInput); }
+
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          showError(emailInput, 'Enter a valid email address'); valid = false;
+        } else { showSuccess(emailInput); }
+
+        if (!valid) { showToast('Please fix the errors before adding a user.'); return; }
+
+        var roleClass = { 'Admin':'role-admin','Designer':'role-designer','Editor':'role-editor','Viewer':'role-viewer' }[role] || 'role-viewer';
+        var newId = 'LST-00' + idCounter++;
+        var tbody = document.getElementById('users-tbody');
+        var tr    = document.createElement('tr');
+        tr.style.cssText = 'opacity:0;transform:translateY(-10px);transition:opacity 0.4s ease,transform 0.4s ease';
+        tr.innerHTML = [
+          '<td>' + newId + '</td>',
+          '<td>' + name + '</td>',
+          '<td>' + email + '</td>',
+          '<td><span class="role-badge ' + roleClass + '">' + role + '</span></td>',
+          '<td><span class="status-badge status-on">Active</span></td>',
+          '<td><button class="delete-btn" onclick="promptDelete(this,\'' + name.replace(/'/g,"\\'") + '\')">Delete</button></td>'
+        ].join('');
+        tbody.appendChild(tr);
+
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            tr.style.opacity = '1'; tr.style.transform = 'translateY(0)';
+          });
+        });
+
+        nameInput.value = ''; emailInput.value = ''; roleInput.value = 'Designer';
+        nameInput.style.borderBottomColor = ''; emailInput.style.borderBottomColor = '';
+        updateCount();
+        showToast('User "' + name + '" added to registry.', 'success');
+      });
+    </script>
+  </body>
+</html>

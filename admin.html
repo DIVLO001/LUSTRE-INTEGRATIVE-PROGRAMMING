@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LUSTRE | Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Open+Sauce+One:wght@300;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-lens"></div>
+
+    <div class="fixed-background">
+      <div class="gradient-overlay"></div>
+    </div>
+    <div class="bg-grid"></div>
+
+    <nav>
+      <div class="logo">
+        <a href="index.html"><img src="logo.png" alt="LUSTRE Logo"></a>
+      </div>
+      <div class="nav-links">
+        <a href="index.html" class="nav-item">Home</a>
+        <a href="login.html" class="nav-item" id="admin-logout">Logout</a>
+      </div>
+    </nav>
+
+    <section class="admin-section">
+      <div class="admin-container">
+
+        <div class="admin-header">
+          <div class="admin-badge">SYSTEM</div>
+          <h1>ADMIN DASHBOARD</h1>
+          <p>Welcome, Administrator. Manage system data from this panel.</p>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="admin-stats-row">
+          <div class="stat-card">
+            <span class="stat-number" id="stat-users">4</span>
+            <span class="stat-label">TOTAL USERS</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number">8</span>
+            <span class="stat-label">PROJECTS</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number stat-active-count">3</span>
+            <span class="stat-label">ACTIVE</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number">1</span>
+            <span class="stat-label">ADMINS</span>
+          </div>
+        </div>
+
+        <!-- Menu Cards -->
+        <div class="admin-menu">
+          <div class="settings-card-header" style="margin-bottom: 30px;">
+            <h2>MANAGEMENT MENU</h2>
+            <div class="line"></div>
+          </div>
+
+          <div class="admin-menu-grid">
+
+            <a href="manage-users.html" class="admin-menu-card">
+              <div class="admin-menu-icon">◈</div>
+              <div class="admin-menu-info">
+                <h3>MANAGE USERS</h3>
+                <p>View, add, and remove user accounts from the system.</p>
+              </div>
+              <span class="admin-menu-arrow">→</span>
+            </a>
+
+            <a href="profile.html" class="admin-menu-card">
+              <div class="admin-menu-icon">◉</div>
+              <div class="admin-menu-info">
+                <h3>MY PROFILE</h3>
+                <p>View and update your administrator profile information.</p>
+              </div>
+              <span class="admin-menu-arrow">→</span>
+            </a>
+
+            <a href="settings.html" class="admin-menu-card">
+              <div class="admin-menu-icon">◎</div>
+              <div class="admin-menu-info">
+                <h3>SETTINGS</h3>
+                <p>Configure account preferences, passwords, and notifications.</p>
+              </div>
+              <span class="admin-menu-arrow">→</span>
+            </a>
+
+            <a href="index.html" class="admin-menu-card">
+              <div class="admin-menu-icon">◇</div>
+              <div class="admin-menu-info">
+                <h3>VIEW SITE</h3>
+                <p>Return to the public-facing landing page of LUSTRE.</p>
+              </div>
+              <span class="admin-menu-arrow">→</span>
+            </a>
+
+          </div>
+        </div>
+
+        <!-- System Info -->
+        <div class="settings-card" style="margin-top: 30px;">
+          <div class="settings-card-header">
+            <h2>SYSTEM INFO</h2>
+            <div class="line"></div>
+          </div>
+          <div class="info-content">
+            <div class="detail-row">
+              <span class="detail-label">PLATFORM</span>
+              <span class="detail-value">LUSTRE v1.0 — BEYOND</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">ENVIRONMENT</span>
+              <span class="detail-value status-active">PRODUCTION</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">LAST UPDATED</span>
+              <span class="detail-value">March 2026</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">SESSION</span>
+              <span class="detail-value status-active">ACTIVE — ADMIN</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <footer>
+      <p>© 2026 BEYOND. Designed in Bohol.</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+      // Admin access guard — redirect to login if not admin
+      (function() {
+        var role = sessionStorage.getItem('userRole');
+        if (role !== 'admin') {
+          window.location.href = 'login.html';
+        }
+      })();
+
+      // Logout clears session
+      document.getElementById('admin-logout').addEventListener('click', function() {
+        sessionStorage.removeItem('userRole');
+      });
+    </script>
+  </body>
+</html>
