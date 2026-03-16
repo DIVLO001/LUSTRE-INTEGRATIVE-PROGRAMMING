@@ -12,167 +12,81 @@
     <style>
       /* --- CONFIRM DIALOG --- */
       .confirm-overlay {
-        position: fixed;
-        inset: 0;
+        position: fixed; inset: 0;
         background: rgba(0,0,0,0.7);
         backdrop-filter: blur(6px);
         z-index: 99990;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        transition: opacity 0.25s ease;
-        pointer-events: none;
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; transition: opacity 0.25s ease; pointer-events: none;
       }
-      .confirm-overlay.active {
-        opacity: 1;
-        pointer-events: all;
-      }
+      .confirm-overlay.active { opacity: 1; pointer-events: all; }
       .confirm-box {
         background: #0a0a0a;
         border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 1px;
-        padding: 45px 50px;
-        max-width: 420px;
-        width: 90%;
+        border-radius: 1px; padding: 45px 50px;
+        max-width: 420px; width: 90%;
         position: relative;
-        transform: translateY(16px);
-        transition: transform 0.25s ease;
+        transform: translateY(16px); transition: transform 0.25s ease;
         text-align: center;
       }
-      .confirm-overlay.active .confirm-box {
-        transform: translateY(0);
-      }
+      .confirm-overlay.active .confirm-box { transform: translateY(0); }
       .confirm-box::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; width: 100%; height: 2px;
+        content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
         background: linear-gradient(90deg, transparent, #ff4d4d, transparent);
       }
-      .confirm-icon {
-        font-size: 2rem;
-        margin-bottom: 20px;
-        display: block;
-      }
+      .confirm-icon { font-size: 2rem; margin-bottom: 20px; display: block; }
       .confirm-box h3 {
-        font-family: 'Open Sauce One', sans-serif;
-        font-size: 1.3rem;
-        color: white;
-        margin: 0 0 10px 0;
-        letter-spacing: -0.5px;
+        font-family: 'Open Sauce One', sans-serif; font-size: 1.3rem;
+        color: white; margin: 0 0 10px 0; letter-spacing: -0.5px;
       }
-      .confirm-box p {
-        color: #a1a1a1;
-        font-size: 0.85rem;
-        margin: 0 0 35px 0;
-        line-height: 1.6;
-      }
-      .confirm-box p strong {
-        color: white;
-      }
-      .confirm-actions {
-        display: flex;
-        gap: 12px;
-        justify-content: center;
-      }
+      .confirm-box p { color: #a1a1a1; font-size: 0.85rem; margin: 0 0 35px 0; line-height: 1.6; }
+      .confirm-box p strong { color: white; }
+      .confirm-actions { display: flex; gap: 12px; justify-content: center; }
       .confirm-delete-btn {
-        background: transparent;
-        color: #ff4d4d;
-        border: 1px solid #ff4d4d;
-        padding: 13px 30px;
-        border-radius: 1px;
-        font-family: 'Inter', sans-serif;
-        font-size: 0.72rem;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        flex: 1;
+        background: transparent; color: #ff4d4d; border: 1px solid #ff4d4d;
+        padding: 13px 30px; border-radius: 1px;
+        font-family: 'Inter', sans-serif; font-size: 0.72rem;
+        letter-spacing: 2px; text-transform: uppercase; font-weight: 600;
+        cursor: pointer; transition: all 0.3s ease; flex: 1;
       }
-      .confirm-delete-btn:hover {
-        background: rgba(255,77,77,0.15);
-        box-shadow: 0 0 20px rgba(255,77,77,0.2);
-      }
+      .confirm-delete-btn:hover { background: rgba(255,77,77,0.15); box-shadow: 0 0 20px rgba(255,77,77,0.2); }
       .confirm-cancel-btn {
-        background: transparent;
-        color: #a1a1a1;
-        border: 1px solid #333;
-        padding: 13px 30px;
-        border-radius: 1px;
-        font-family: 'Inter', sans-serif;
-        font-size: 0.72rem;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        flex: 1;
+        background: transparent; color: #a1a1a1; border: 1px solid #333;
+        padding: 13px 30px; border-radius: 1px;
+        font-family: 'Inter', sans-serif; font-size: 0.72rem;
+        letter-spacing: 2px; text-transform: uppercase; font-weight: 600;
+        cursor: pointer; transition: all 0.3s ease; flex: 1;
       }
-      .confirm-cancel-btn:hover {
-        border-color: white;
-        color: white;
-      }
+      .confirm-cancel-btn:hover { border-color: white; color: white; }
 
       /* --- UNDO TOAST --- */
       .undo-toast {
-        position: fixed;
-        bottom: 40px;
-        left: 50%;
+        position: fixed; bottom: 40px; left: 50%;
         transform: translateX(-50%) translateY(20px);
         background: rgba(10,10,10,0.95);
         border: 1px solid rgba(255,255,255,0.12);
-        color: white;
-        padding: 14px 20px 16px 24px;
-        font-size: 0.75rem;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-        font-family: 'Inter', sans-serif;
-        border-radius: 1px;
-        z-index: 99999;
-        opacity: 0;
-        transition: opacity 0.3s ease, transform 0.3s ease;
+        color: white; padding: 14px 20px 16px 24px;
+        font-size: 0.75rem; letter-spacing: 1.5px; text-transform: uppercase;
+        font-family: 'Inter', sans-serif; border-radius: 1px; z-index: 99999;
+        opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease;
         backdrop-filter: blur(10px);
-        display: flex;
-        align-items: center;
-        gap: 18px;
-        white-space: nowrap;
-        overflow: hidden;
+        display: flex; align-items: center; gap: 18px;
+        white-space: nowrap; overflow: hidden;
       }
-      .undo-toast.show {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-      }
-      .undo-toast-text {
-        color: #a1a1a1;
-      }
-      .undo-toast-text strong {
-        color: white;
-      }
+      .undo-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+      .undo-toast-text { color: #a1a1a1; }
+      .undo-toast-text strong { color: white; }
       .undo-btn {
-        background: transparent;
-        border: 1px solid #cceb45;
-        color: #cceb45;
-        padding: 6px 16px;
-        border-radius: 1px;
-        font-family: 'Inter', sans-serif;
-        font-size: 0.65rem;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.25s ease;
-        flex-shrink: 0;
+        background: transparent; border: 1px solid #cceb45; color: #cceb45;
+        padding: 6px 16px; border-radius: 1px;
+        font-family: 'Inter', sans-serif; font-size: 0.65rem;
+        letter-spacing: 2px; text-transform: uppercase; font-weight: 600;
+        cursor: pointer; transition: all 0.25s ease; flex-shrink: 0;
       }
-      .undo-btn:hover {
-        background: rgba(204,235,69,0.15);
-      }
+      .undo-btn:hover { background: rgba(204,235,69,0.15); }
       .undo-timer-bar {
-        position: absolute;
-        bottom: 0; left: 0;
-        height: 2px;
-        background: #cceb45;
-        width: 100%;
+        position: absolute; bottom: 0; left: 0;
+        height: 2px; background: #cceb45; width: 100%;
         transform-origin: left;
       }
     </style>
@@ -282,7 +196,7 @@
                 <tr data-id="1">
                   <td>LST-001</td>
                   <td>Bianca Lustre</td>
-                  <td>hadaleilani@gmail.com</td>
+                  <td>admin@lustre.com</td>
                   <td><span class="role-badge role-admin">Admin</span></td>
                   <td><span class="status-badge status-on">Active</span></td>
                   <td><button class="delete-btn" onclick="promptDelete(this, 'Bianca Lustre')">Delete</button></td>
@@ -290,7 +204,7 @@
                 <tr data-id="2">
                   <td>LST-002</td>
                   <td>Ana Reyes</td>
-                  <td>ana@email.com</td>
+                  <td>ana@lustre.com</td>
                   <td><span class="role-badge role-designer">Designer</span></td>
                   <td><span class="status-badge status-on">Active</span></td>
                   <td><button class="delete-btn" onclick="promptDelete(this, 'Ana Reyes')">Delete</button></td>
@@ -298,7 +212,7 @@
                 <tr data-id="3">
                   <td>LST-003</td>
                   <td>Juan dela Cruz</td>
-                  <td>juan@email.com</td>
+                  <td>juan@lustre.com</td>
                   <td><span class="role-badge role-editor">Editor</span></td>
                   <td><span class="status-badge status-on">Active</span></td>
                   <td><button class="delete-btn" onclick="promptDelete(this, 'Juan dela Cruz')">Delete</button></td>
@@ -306,7 +220,7 @@
                 <tr data-id="4">
                   <td>LST-004</td>
                   <td>Marco Diaz</td>
-                  <td>marco@email.com</td>
+                  <td>marco@lustre.com</td>
                   <td><span class="role-badge role-viewer">Viewer</span></td>
                   <td><span class="status-badge status-off">Inactive</span></td>
                   <td><button class="delete-btn" onclick="promptDelete(this, 'Marco Diaz')">Delete</button></td>
@@ -340,19 +254,25 @@
         sessionStorage.removeItem('userRole');
       });
 
-      /* ---- STATE ---- */
-      var idCounter  = 5;
-      var pendingRow = null;
+      /* ================================================================
+         USER TABLE MANAGEMENT
+         ================================================================ */
+
+      var idCounter  = 5;       // next new user ID suffix
+      var pendingRow  = null;   // row waiting for delete confirmation
       var pendingName = '';
-      var undoRow    = null;
-      var undoAfter  = null;
-      var undoTimer  = null;
-      var UNDO_MS    = 5000;
+
+      /* Undo state */
+      var undoRow       = null;   // the detached <tr> element
+      var undoAfterNode = null;   // the sibling it was after (null = was first child)
+      var undoTimer     = null;
+      var UNDO_MS       = 5000;
 
       /* ---- COUNT ---- */
       function updateCount() {
         var n = document.querySelectorAll('#users-tbody tr').length;
-        document.getElementById('user-count').innerHTML = 'Showing <strong>' + n + '</strong> users';
+        document.getElementById('user-count').innerHTML =
+          'Showing <strong>' + n + '</strong> users';
       }
 
       /* ---- CONFIRM DIALOG ---- */
@@ -365,6 +285,7 @@
         confirmName.textContent = name;
         overlay.classList.add('active');
       }
+
       function closeConfirm() {
         overlay.classList.remove('active');
         pendingRow  = null;
@@ -372,7 +293,9 @@
       }
 
       document.getElementById('confirm-cancel').addEventListener('click', closeConfirm);
-      overlay.addEventListener('click', function(e) { if (e.target === overlay) closeConfirm(); });
+      overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) closeConfirm();
+      });
 
       document.getElementById('confirm-proceed').addEventListener('click', function() {
         var row  = pendingRow;
@@ -381,21 +304,34 @@
         executeDelete(row, name);
       });
 
+      /* Called from the inline onclick on each Delete button */
       function promptDelete(btn, name) {
         openConfirm(btn.closest('tr'), name);
       }
 
-      /* ---- DELETE ---- */
+      /* ---- DELETE with UNDO support ---- */
       function executeDelete(row, name) {
-        undoRow   = row;
-        undoAfter = row.previousElementSibling;
+        var tbody = document.getElementById('users-tbody');
 
+        // Remember position BEFORE detaching
+        // undoAfterNode = previous sibling, or null if row was first
+        undoAfterNode = row.previousElementSibling || null;
+
+        // Animate out
         row.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
         row.style.opacity    = '0';
         row.style.transform  = 'translateX(24px)';
 
         setTimeout(function() {
-          row.remove();
+          // Detach from DOM (does NOT delete the JS object)
+          if (row.parentNode) row.parentNode.removeChild(row);
+
+          // IMPORTANT: clear inline transition/opacity so re-insertion is clean
+          row.style.transition = '';
+          row.style.opacity    = '';
+          row.style.transform  = '';
+
+          undoRow = row;
           updateCount();
           showUndoToast(name);
         }, 350);
@@ -412,7 +348,7 @@
         undoNameEl.textContent = name;
         undoToast.classList.add('show');
 
-        // Reset and animate the timer bar
+        // Animate the timer bar
         undoBarEl.style.transition = 'none';
         undoBarEl.style.transform  = 'scaleX(1)';
         requestAnimationFrame(function() {
@@ -424,37 +360,47 @@
 
         undoTimer = setTimeout(function() {
           undoToast.classList.remove('show');
-          undoRow   = null;
-          undoAfter = null;
+          // Permanently discard undo state after timeout
+          undoRow       = null;
+          undoAfterNode = null;
         }, UNDO_MS);
       }
 
+      /* ---- UNDO BUTTON ---- */
       undoBtnEl.addEventListener('click', function() {
         if (!undoRow) return;
+
         clearTimeout(undoTimer);
         undoToast.classList.remove('show');
 
         var tbody = document.getElementById('users-tbody');
-        if (undoAfter && undoAfter.parentNode === tbody) {
-          undoAfter.insertAdjacentElement('afterend', undoRow);
+
+        // Re-insert at the original position
+        if (undoAfterNode && undoAfterNode.parentNode === tbody) {
+          // Insert after the recorded previous sibling
+          undoAfterNode.insertAdjacentElement('afterend', undoRow);
         } else {
+          // Was the first row — insert at the top
           tbody.insertBefore(undoRow, tbody.firstChild);
         }
 
-        // Animate back in
+        // Animate back in from left
         undoRow.style.opacity    = '0';
         undoRow.style.transform  = 'translateX(-24px)';
+        undoRow.style.transition = 'none';
+
+        // Force reflow so the browser registers the starting state
+        void undoRow.offsetHeight;
+
         undoRow.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
-        requestAnimationFrame(function() {
-          requestAnimationFrame(function() {
-            undoRow.style.opacity   = '1';
-            undoRow.style.transform = 'translateX(0)';
-          });
-        });
+        undoRow.style.opacity    = '1';
+        undoRow.style.transform  = 'translateX(0)';
 
         updateCount();
-        undoRow   = null;
-        undoAfter = null;
+
+        // Clear undo state
+        undoRow       = null;
+        undoAfterNode = null;
       });
 
       /* ---- ADD USER ---- */
@@ -477,31 +423,46 @@
 
         if (!valid) { showToast('Please fix the errors before adding a user.'); return; }
 
-        var roleClass = { 'Admin':'role-admin','Designer':'role-designer','Editor':'role-editor','Viewer':'role-viewer' }[role] || 'role-viewer';
+        var roleClass = {
+          'Admin':    'role-admin',
+          'Designer': 'role-designer',
+          'Editor':   'role-editor',
+          'Viewer':   'role-viewer'
+        }[role] || 'role-viewer';
+
         var newId = 'LST-00' + idCounter++;
         var tbody = document.getElementById('users-tbody');
         var tr    = document.createElement('tr');
-        tr.style.cssText = 'opacity:0;transform:translateY(-10px);transition:opacity 0.4s ease,transform 0.4s ease';
-        tr.innerHTML = [
-          '<td>' + newId + '</td>',
-          '<td>' + name + '</td>',
-          '<td>' + email + '</td>',
-          '<td><span class="role-badge ' + roleClass + '">' + role + '</span></td>',
-          '<td><span class="status-badge status-on">Active</span></td>',
-          '<td><button class="delete-btn" onclick="promptDelete(this,\'' + name.replace(/'/g,"\\'") + '\')">Delete</button></td>'
-        ].join('');
+
+        tr.innerHTML =
+          '<td>' + newId + '</td>' +
+          '<td>' + name + '</td>' +
+          '<td>' + email + '</td>' +
+          '<td><span class="role-badge ' + roleClass + '">' + role + '</span></td>' +
+          '<td><span class="status-badge status-on">Active</span></td>' +
+          '<td><button class="delete-btn" onclick="promptDelete(this,\'' +
+            name.replace(/\\/g, '\\\\').replace(/'/g, "\\'") +
+          '\')">Delete</button></td>';
+
+        // Animate in
+        tr.style.opacity   = '0';
+        tr.style.transform = 'translateY(-10px)';
+        tr.style.transition = 'none';
         tbody.appendChild(tr);
 
-        requestAnimationFrame(function() {
-          requestAnimationFrame(function() {
-            tr.style.opacity = '1'; tr.style.transform = 'translateY(0)';
-          });
-        });
+        // Force reflow
+        void tr.offsetHeight;
 
-        nameInput.value = ''; emailInput.value = ''; roleInput.value = 'Designer';
-        nameInput.style.borderBottomColor = ''; emailInput.style.borderBottomColor = '';
+        tr.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        tr.style.opacity    = '1';
+        tr.style.transform  = 'translateY(0)';
+
+        nameInput.value  = '';
+        emailInput.value = '';
+        clearError(nameInput);
+        clearError(emailInput);
         updateCount();
-        showToast('User "' + name + '" added to registry.', 'success');
+        showToast(name + ' has been added to the registry.', 'success');
       });
     </script>
   </body>
