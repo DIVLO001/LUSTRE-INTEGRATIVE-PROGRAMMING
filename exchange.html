@@ -1,0 +1,930 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LUSTRE | Exchange Rates</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Open+Sauce+One:wght@300;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
+
+    <style>
+      /* ================================================================
+         EXCHANGE RATE PAGE — additional styles
+         ================================================================ */
+
+      .exchange-section {
+        min-height: 100vh;
+        padding: 120px 60px 80px 60px;
+        position: relative;
+        z-index: 5;
+      }
+
+      .exchange-container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      .exchange-header {
+        margin-bottom: 50px;
+      }
+
+      .exchange-header h1 {
+        font-family: var(--font-display);
+        font-size: 3.5rem;
+        margin: 0 0 15px 0;
+        letter-spacing: -2px;
+        background: linear-gradient(180deg, #fff, #888);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .exchange-header p {
+        color: var(--text-grey);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin: 0;
+      }
+
+      /* ---- CONVERTER CARD ---- */
+      .converter-card {
+        background: rgba(10, 10, 10, 0.4);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 1px;
+        padding: 45px 50px;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 25px;
+      }
+
+      .converter-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 2px;
+        background: linear-gradient(90deg, transparent, var(--neon-green), transparent);
+      }
+
+      .converter-card-header {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 35px;
+      }
+
+      .converter-card-header h2 {
+        font-size: 0.9rem;
+        letter-spacing: 2px;
+        color: white;
+        margin: 0;
+        white-space: nowrap;
+      }
+
+      .converter-card-header .line {
+        height: 1px;
+        width: 100%;
+        background: #1a1a1a;
+      }
+
+      /* ---- CONVERTER LAYOUT ---- */
+      .converter-row {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 20px;
+        align-items: end;
+        margin-bottom: 35px;
+      }
+
+      .converter-field label {
+        display: block;
+        color: var(--neon-green);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 12px;
+        font-weight: 600;
+      }
+
+      /* Amount input */
+      .amount-wrap {
+        position: relative;
+      }
+
+      .amount-input {
+        width: 100%;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid #333;
+        color: white;
+        padding: 12px 0;
+        font-size: 1.4rem;
+        font-family: var(--font-display);
+        outline: none;
+        transition: border-color 0.3s ease;
+        cursor: text;
+        letter-spacing: -1px;
+      }
+
+      .amount-input:focus {
+        border-bottom-color: var(--neon-green);
+      }
+
+      .amount-input::placeholder {
+        color: #333;
+      }
+
+      /* Currency select */
+      .currency-select-wrap {
+        position: relative;
+      }
+
+      .currency-select {
+        width: 100%;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: white;
+        padding: 12px 40px 12px 16px;
+        font-size: 0.85rem;
+        font-family: var(--font-main);
+        outline: none;
+        border-radius: 1px;
+        cursor: pointer;
+        transition: border-color 0.3s ease;
+        appearance: none;
+        -webkit-appearance: none;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-weight: 600;
+      }
+
+      .currency-select:focus {
+        border-color: var(--neon-green);
+      }
+
+      .currency-select option {
+        background: #0a0a0a;
+        color: white;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .select-arrow {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-grey);
+        font-size: 0.7rem;
+        pointer-events: none;
+      }
+
+      /* ---- SWAP BUTTON ---- */
+      .swap-col {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-bottom: 4px;
+      }
+
+      .swap-btn {
+        background: transparent;
+        border: 1px solid rgba(255,255,255,0.12);
+        color: var(--text-grey);
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+      }
+
+      .swap-btn:hover {
+        border-color: var(--neon-green);
+        color: var(--neon-green);
+        box-shadow: 0 0 20px rgba(204,235,69,0.15);
+        transform: rotate(180deg);
+      }
+
+      /* ---- RESULT DISPLAY ---- */
+      .result-block {
+        border-top: 1px solid rgba(255,255,255,0.06);
+        padding-top: 30px;
+        min-height: 90px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      /* Loading shimmer */
+      .result-loading {
+        display: none;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .result-loading.visible { display: flex; }
+
+      .mini-ring {
+        width: 18px; height: 18px;
+        border: 1px solid rgba(204,235,69,0.25);
+        border-top-color: var(--neon-green);
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+        flex-shrink: 0;
+      }
+
+      @keyframes spin { to { transform: rotate(360deg); } }
+
+      .result-loading span {
+        color: #444;
+        font-size: 0.72rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+
+      /* Result value */
+      .result-value-wrap {
+        display: none;
+      }
+
+      .result-value-wrap.visible { display: block; }
+
+      .result-equation {
+        font-size: 0.72rem;
+        color: #555;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+
+      .result-big {
+        font-family: var(--font-display);
+        font-size: 2.8rem;
+        color: var(--neon-green);
+        letter-spacing: -2px;
+        line-height: 1;
+        transition: opacity 0.2s ease;
+      }
+
+      .result-big.updating {
+        opacity: 0.4;
+      }
+
+      .result-rate {
+        font-size: 0.72rem;
+        color: #444;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-top: 8px;
+      }
+
+      .result-rate span {
+        color: #666;
+      }
+
+      /* Error state */
+      .result-error {
+        display: none;
+        color: #ff4d4d;
+        font-size: 0.75rem;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+      }
+
+      .result-error.visible { display: block; }
+
+      /* ---- QUICK RATES CARD ---- */
+      .quick-card {
+        background: rgba(10, 10, 10, 0.4);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 1px;
+        padding: 35px 50px;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 25px;
+      }
+
+      .quick-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(204,235,69,0.4), transparent);
+      }
+
+      .quick-card-header {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 28px;
+      }
+
+      .quick-card-header h2 {
+        font-size: 0.9rem;
+        letter-spacing: 2px;
+        color: white;
+        margin: 0;
+        white-space: nowrap;
+      }
+
+      .quick-card-header .line {
+        height: 1px;
+        width: 100%;
+        background: #1a1a1a;
+      }
+
+      .quick-base-label {
+        font-size: 0.68rem;
+        color: #444;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+      }
+
+      .quick-base-label strong {
+        color: var(--neon-green);
+      }
+
+      .quick-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+      }
+
+      .quick-item {
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 1px;
+        padding: 18px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        transition: border-color 0.25s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .quick-item::before {
+        content: '';
+        position: absolute;
+        bottom: 0; left: 0;
+        width: 0; height: 1px;
+        background: var(--neon-green);
+        transition: width 0.3s ease;
+      }
+
+      .quick-item:hover::before { width: 100%; }
+
+      .quick-item:hover {
+        border-color: rgba(204,235,69,0.2);
+        background: rgba(204,235,69,0.02);
+      }
+
+      .quick-code {
+        font-size: 0.65rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #555;
+        font-weight: 600;
+      }
+
+      .quick-rate {
+        font-family: var(--font-display);
+        font-size: 1.3rem;
+        color: white;
+        letter-spacing: -1px;
+        line-height: 1;
+        transition: color 0.25s ease;
+      }
+
+      .quick-item:hover .quick-rate { color: var(--neon-green); }
+
+      .quick-name {
+        font-size: 0.65rem;
+        color: #444;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      /* Skeleton shimmer for quick rates */
+      .quick-rate.loading {
+        background: linear-gradient(90deg, #1a1a1a 25%, #222 50%, #1a1a1a 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.2s infinite;
+        border-radius: 2px;
+        color: transparent;
+        height: 1.3rem;
+        width: 70%;
+      }
+
+      @keyframes shimmer {
+        0%   { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+
+      /* ---- INFO STRIP ---- */
+      .info-strip {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 24px;
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 1px;
+        background: rgba(255,255,255,0.01);
+      }
+
+      .info-strip-left {
+        font-size: 0.68rem;
+        color: #444;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      .info-strip-left strong {
+        color: #666;
+      }
+
+      .info-strip-right {
+        font-size: 0.68rem;
+        color: #333;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      /* ---- RESPONSIVE ---- */
+      @media (max-width: 768px) {
+        .exchange-section { padding: 80px 20px 40px; }
+        .converter-card, .quick-card { padding: 30px 25px; }
+        .exchange-header h1 { font-size: 2.5rem; }
+        .converter-row { grid-template-columns: 1fr; gap: 25px; }
+        .swap-col { justify-content: flex-start; }
+        .swap-btn:hover { transform: rotate(90deg); }
+        .quick-grid { grid-template-columns: repeat(2, 1fr); }
+        .result-big { font-size: 2rem; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-lens"></div>
+
+    <div class="fixed-background">
+      <div class="gradient-overlay"></div>
+    </div>
+    <div class="bg-grid"></div>
+
+    <nav>
+      <div class="logo">
+        <a href="index.html"><img src="logo.png" alt="LUSTRE Logo"></a>
+      </div>
+      <div class="nav-links">
+        <a href="index.html" class="nav-item">Home</a>
+        <a href="login.html" class="nav-item">Login</a>
+      </div>
+    </nav>
+
+    <section class="exchange-section">
+      <div class="exchange-container">
+
+        <div class="exchange-header">
+          <div class="admin-badge">API</div>
+          <h1>EXCHANGE RATES</h1>
+          <p>Live currency conversion via ExchangeRate-API</p>
+        </div>
+
+        <!-- Converter Card -->
+        <div class="converter-card">
+          <div class="converter-card-header">
+            <h2>CONVERTER</h2>
+            <div class="line"></div>
+          </div>
+
+          <div class="converter-row">
+
+            <!-- FROM -->
+            <div class="converter-field">
+              <label>Amount</label>
+              <div class="amount-wrap">
+                <input
+                  class="amount-input"
+                  type="number"
+                  id="amount-input"
+                  placeholder="1"
+                  min="0"
+                  step="any"
+                  value="1"
+                  autocomplete="off"
+                >
+              </div>
+              <div style="margin-top: 16px;">
+                <label style="margin-bottom:12px;">From</label>
+                <div class="currency-select-wrap">
+                  <select class="currency-select" id="from-select">
+                    <option value="">Loading…</option>
+                  </select>
+                  <span class="select-arrow">▾</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- SWAP -->
+            <div class="swap-col">
+              <button class="swap-btn" id="swap-btn" title="Swap currencies">⇄</button>
+            </div>
+
+            <!-- TO -->
+            <div class="converter-field">
+              <label>To</label>
+              <div class="currency-select-wrap">
+                <select class="currency-select" id="to-select">
+                  <option value="">Loading…</option>
+                </select>
+                <span class="select-arrow">▾</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Result -->
+          <div class="result-block">
+
+            <div class="result-loading" id="result-loading">
+              <div class="mini-ring"></div>
+              <span>Fetching live rate…</span>
+            </div>
+
+            <div class="result-value-wrap" id="result-value-wrap">
+              <p class="result-equation" id="result-equation"></p>
+              <div class="result-big" id="result-big">—</div>
+              <p class="result-rate" id="result-rate"></p>
+            </div>
+
+            <div class="result-error" id="result-error"></div>
+
+          </div>
+        </div>
+
+        <!-- Quick Rates Card -->
+        <div class="quick-card" id="quick-card">
+          <div class="quick-card-header">
+            <h2>QUICK RATES</h2>
+            <div class="line"></div>
+          </div>
+          <p class="quick-base-label" id="quick-base-label">1 <strong>USD</strong> equals:</p>
+          <div class="quick-grid" id="quick-grid">
+            <!-- populated by JS -->
+          </div>
+        </div>
+
+        <!-- Info strip -->
+        <div class="info-strip">
+          <span class="info-strip-left">Source: <strong>ExchangeRate-API (open.er-api.com)</strong> — free tier, updates daily</span>
+          <span class="info-strip-right">Click a quick rate to set as target</span>
+        </div>
+
+      </div>
+    </section>
+
+    <footer>
+      <p>© 2026 BEYOND. Designed in Bohol.</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+      /* ================================================================
+         EXCHANGE RATE CONVERTER
+         API: https://open.er-api.com/v6/latest/{base}
+         Free, no key required, updates daily, CORS-enabled
+         ================================================================ */
+
+      /* ---- QUICK RATE CURRENCIES ---- */
+      var QUICK_CURRENCIES = ['PHP', 'EUR', 'GBP', 'JPY', 'KRW', 'CNY', 'AUD', 'CAD'];
+
+      /* ---- FRIENDLY CURRENCY NAMES (for dropdown labels) ---- */
+      var CURRENCY_NAMES = {
+        USD:'US Dollar', EUR:'Euro', GBP:'British Pound', JPY:'Japanese Yen',
+        PHP:'Philippine Peso', KRW:'South Korean Won', CNY:'Chinese Yuan',
+        AUD:'Australian Dollar', CAD:'Canadian Dollar', CHF:'Swiss Franc',
+        INR:'Indian Rupee', MXN:'Mexican Peso', BRL:'Brazilian Real',
+        SGD:'Singapore Dollar', HKD:'Hong Kong Dollar', NOK:'Norwegian Krone',
+        SEK:'Swedish Krona', DKK:'Danish Krone', NZD:'New Zealand Dollar',
+        ZAR:'South African Rand', AED:'UAE Dirham', SAR:'Saudi Riyal',
+        THB:'Thai Baht', MYR:'Malaysian Ringgit', IDR:'Indonesian Rupiah',
+        TRY:'Turkish Lira', RUB:'Russian Ruble', PLN:'Polish Zloty',
+        CZK:'Czech Koruna', HUF:'Hungarian Forint', ILS:'Israeli Shekel',
+        CLP:'Chilean Peso', COP:'Colombian Peso', PEN:'Peruvian Sol',
+        EGP:'Egyptian Pound', NGN:'Nigerian Naira', KES:'Kenyan Shilling',
+        PKR:'Pakistani Rupee', BDT:'Bangladeshi Taka', VND:'Vietnamese Dong',
+        UAH:'Ukrainian Hryvnia', RON:'Romanian Leu', BGN:'Bulgarian Lev'
+      };
+
+      /* ---- STATE ---- */
+      var allRates    = {};  // rates keyed by base currency
+      var currentBase = 'USD';
+      var debounceTimer = null;
+
+      /* ---- DOM refs ---- */
+      var fromSelect    = document.getElementById('from-select');
+      var toSelect      = document.getElementById('to-select');
+      var amountInput   = document.getElementById('amount-input');
+      var swapBtn       = document.getElementById('swap-btn');
+      var resultLoading = document.getElementById('result-loading');
+      var resultWrap    = document.getElementById('result-value-wrap');
+      var resultEq      = document.getElementById('result-equation');
+      var resultBig     = document.getElementById('result-big');
+      var resultRate    = document.getElementById('result-rate');
+      var resultError   = document.getElementById('result-error');
+      var quickGrid     = document.getElementById('quick-grid');
+      var quickBaseLabel = document.getElementById('quick-base-label');
+
+      /* ================================================================
+         STEP 1: Fetch supported currencies list + initial rates
+         ================================================================ */
+      function init() {
+        // Populate selects with known currencies while API loads
+        populateSelectsFromKnown();
+        // Fetch live rates for default base (USD)
+        fetchRates('USD');
+      }
+
+      function populateSelectsFromKnown() {
+        var codes = Object.keys(CURRENCY_NAMES).sort();
+        [fromSelect, toSelect].forEach(function(sel) {
+          sel.innerHTML = '';
+          codes.forEach(function(code) {
+            var opt = document.createElement('option');
+            opt.value = code;
+            opt.textContent = code + ' — ' + CURRENCY_NAMES[code];
+            sel.appendChild(opt);
+          });
+        });
+        fromSelect.value = 'USD';
+        toSelect.value   = 'PHP';
+        buildQuickGrid();
+      }
+
+      /* ================================================================
+         STEP 2: Fetch rates from API
+         ================================================================ */
+      function fetchRates(base) {
+        if (allRates[base]) {
+          // Already cached — use instantly
+          onRatesReady(base);
+          return;
+        }
+
+        showLoading();
+
+        fetch('https://open.er-api.com/v6/latest/' + base)
+          .then(function(res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+          })
+          .then(function(data) {
+            if (data.result !== 'success') throw new Error('API returned failure');
+
+            // Cache the rates
+            allRates[base] = data.rates;
+
+            // Also populate dropdowns with every currency the API returned
+            var apiCodes = Object.keys(data.rates).sort();
+            updateSelectsWithApiCodes(apiCodes);
+
+            onRatesReady(base);
+          })
+          .catch(function(err) {
+            showResultError(
+              err.message.indexOf('fetch') !== -1 || err.name === 'TypeError'
+                ? 'No internet connection — check your network and try again.'
+                : 'Could not retrieve exchange rates. Please try again shortly.'
+            );
+          });
+      }
+
+      /* Add any API currencies not already in the dropdowns */
+      function updateSelectsWithApiCodes(apiCodes) {
+        var existingCodes = Array.from(fromSelect.options).map(function(o) { return o.value; });
+        var newCodes = apiCodes.filter(function(c) { return existingCodes.indexOf(c) === -1; });
+
+        newCodes.forEach(function(code) {
+          [fromSelect, toSelect].forEach(function(sel) {
+            var opt = document.createElement('option');
+            opt.value = code;
+            opt.textContent = CURRENCY_NAMES[code] ? code + ' — ' + CURRENCY_NAMES[code] : code;
+            sel.appendChild(opt);
+          });
+        });
+      }
+
+      /* ================================================================
+         STEP 3: Display result
+         ================================================================ */
+      function onRatesReady(base) {
+        currentBase = base;
+        convert();
+        renderQuickRates(base);
+      }
+
+      function convert() {
+        var from   = fromSelect.value;
+        var to     = toSelect.value;
+        var amount = parseFloat(amountInput.value);
+
+        // Validate amount
+        if (!amountInput.value || isNaN(amount) || amount < 0) {
+          if (amountInput.value && amountInput.value !== '') {
+            if (window.showError) window.showError(amountInput, 'Enter a valid positive number');
+          }
+          hideResult();
+          return;
+        }
+        if (window.clearError) window.clearError(amountInput);
+
+        if (!from || !to) { hideResult(); return; }
+
+        // If base is different from current cached base, fetch new rates
+        if (!allRates[from]) {
+          fetchRates(from);
+          return;
+        }
+
+        var rates = allRates[from];
+        if (!rates[to]) {
+          showResultError('No rate available for ' + to + '.');
+          return;
+        }
+
+        var rate       = rates[to];
+        var converted  = amount * rate;
+
+        // Format nicely
+        var formatted;
+        if (converted >= 1000000)      formatted = (converted / 1000000).toFixed(2) + 'M';
+        else if (converted >= 10000)   formatted = converted.toLocaleString('en-US', { maximumFractionDigits: 2 });
+        else if (converted >= 1)       formatted = converted.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 });
+        else                           formatted = converted.toPrecision(4);
+
+        // Show result
+        hideLoading();
+        resultError.classList.remove('visible');
+        resultBig.classList.add('updating');
+        resultWrap.classList.add('visible');
+
+        setTimeout(function() {
+          var fromName = CURRENCY_NAMES[from] || from;
+          var toName   = CURRENCY_NAMES[to]   || to;
+          resultEq.textContent  = amount.toLocaleString() + ' ' + from + ' =';
+          resultBig.textContent = formatted + ' ' + to;
+          resultRate.innerHTML  = '1 ' + from + ' = <span>' + rate.toFixed(6) + '</span> ' + to;
+          resultBig.classList.remove('updating');
+        }, 80);
+
+        // Update quick rates if base changed
+        if (from !== currentBase) {
+          currentBase = from;
+          renderQuickRates(from);
+        }
+      }
+
+      /* ================================================================
+         QUICK RATES grid
+         ================================================================ */
+      function buildQuickGrid() {
+        quickGrid.innerHTML = '';
+        QUICK_CURRENCIES.forEach(function(code) {
+          var item = document.createElement('div');
+          item.className = 'quick-item';
+          item.dataset.code = code;
+          item.innerHTML =
+            '<span class="quick-code">' + code + '</span>' +
+            '<span class="quick-rate loading" id="qr-' + code + '">—</span>' +
+            '<span class="quick-name">' + (CURRENCY_NAMES[code] || '') + '</span>';
+          item.addEventListener('click', function() {
+            toSelect.value = code;
+            convert();
+          });
+          quickGrid.appendChild(item);
+        });
+      }
+
+      function renderQuickRates(base) {
+        var rates = allRates[base];
+        quickBaseLabel.innerHTML = '1 <strong>' + base + '</strong> equals:';
+
+        QUICK_CURRENCIES.forEach(function(code) {
+          var el = document.getElementById('qr-' + code);
+          if (!el) return;
+          el.classList.remove('loading');
+          if (code === base) {
+            el.textContent = '1.0000';
+          } else if (rates && rates[code]) {
+            var r = rates[code];
+            el.textContent = r >= 100 ? r.toFixed(2) : r >= 1 ? r.toFixed(4) : r.toPrecision(4);
+          } else {
+            el.textContent = '—';
+          }
+        });
+      }
+
+      /* ================================================================
+         UI STATE HELPERS
+         ================================================================ */
+      function showLoading() {
+        resultLoading.classList.add('visible');
+        resultWrap.classList.remove('visible');
+        resultError.classList.remove('visible');
+      }
+
+      function hideLoading() {
+        resultLoading.classList.remove('visible');
+      }
+
+      function hideResult() {
+        resultLoading.classList.remove('visible');
+        resultWrap.classList.remove('visible');
+        resultError.classList.remove('visible');
+      }
+
+      function showResultError(msg) {
+        hideLoading();
+        resultWrap.classList.remove('visible');
+        resultError.textContent = '⚠ ' + msg;
+        resultError.classList.add('visible');
+      }
+
+      /* ================================================================
+         EVENT LISTENERS
+         ================================================================ */
+
+      // Auto-convert on dropdown change
+      fromSelect.addEventListener('change', function() {
+        // Fetch new rates for new base if needed
+        var base = fromSelect.value;
+        if (!allRates[base]) {
+          fetchRates(base);
+        } else {
+          currentBase = base;
+          convert();
+          renderQuickRates(base);
+        }
+      });
+
+      toSelect.addEventListener('change', function() {
+        convert();
+      });
+
+      // Debounced amount input
+      amountInput.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(convert, 300);
+      });
+
+      // Swap button
+      swapBtn.addEventListener('click', function() {
+        var tmp = fromSelect.value;
+        fromSelect.value = toSelect.value;
+        toSelect.value   = tmp;
+
+        // Fetch new base if needed, then convert
+        var newBase = fromSelect.value;
+        if (!allRates[newBase]) {
+          fetchRates(newBase);
+        } else {
+          currentBase = newBase;
+          convert();
+          renderQuickRates(newBase);
+        }
+      });
+
+      // Input validation
+      amountInput.addEventListener('blur', function() {
+        var val = parseFloat(amountInput.value);
+        if (amountInput.value && (isNaN(val) || val < 0)) {
+          if (window.showError) window.showError(amountInput, 'Enter a valid positive number');
+        } else {
+          if (window.clearError) window.clearError(amountInput);
+        }
+      });
+
+      amountInput.addEventListener('input', function() {
+        if (window.clearError) window.clearError(amountInput);
+      });
+
+      /* ================================================================
+         BOOT
+         ================================================================ */
+      init();
+    </script>
+  </body>
+</html>
