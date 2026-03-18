@@ -77,7 +77,7 @@ I learned how to intercept form submission events in JavaScript and provide mean
 
 ---
 
-# Create Admin Pages ACTIVITY March 2026
+# Create Admin Pages ACTIVITY March 16, 2026
 
 🔹 Admin Dashboard & User Management
 
@@ -105,3 +105,34 @@ I used Claude to help build the admin pages and wire up the role-based routing l
 
 🔹 Learning Reflection (Short)
 I learned how to implement a basic role-based access control pattern using `sessionStorage` and how to protect pages with an access guard in vanilla JavaScript. The most challenging part was keeping the admin pages visually consistent with the existing design system while introducing new table and form components. I also gained experience in building dynamic table management with animated row insertion and deletion.
+
+# localStorage Save Feature ACTIVITY March 18, 2026
+
+🔹 Saved Exchange Rates (localStorage)
+
+🔹 Description
+Extended the LUSTRE exchange rate page by adding a Save Rate feature that stores selected currency conversions in the browser's localStorage and displays them on a dedicated Saved Rates page. This activity builds on the existing API integration by allowing users to bookmark specific conversions that persist across page refreshes, preparing for real database integration in future builds.
+
+🔹 Technologies Used
+* HTML5
+* CSS3
+* JavaScript (localStorage API)
+
+🔹 Features
+* Save Rate Button: A "⊕ SAVE RATE" button appears below the conversion result once a valid rate is displayed. Clicking it stores the conversion data in localStorage.
+* Duplicate Prevention: Each entry is keyed by a combination of the from currency, to currency, and amount. Attempting to save the same conversion twice is blocked, and the button updates to an "ALREADY SAVED" state.
+* Data Persistence: Saved rates remain in localStorage after page refresh, tab close, and browser restart.
+* Saved Rates Page (saved-rates.html): A dedicated page that reads all saved entries from localStorage and renders them in a list showing the currency pair, converted amount, exchange rate, and the date/time it was saved.
+* Remove Individual Entry: Each saved item has a REMOVE button to delete it from localStorage without affecting other entries.
+* Clear All: A CLEAR ALL button at the bottom removes every saved rate at once after a confirmation prompt.
+* Empty State: When no rates are saved, the page displays a friendly message with a link back to the exchange page.
+* Live Count: A badge in the nav and on the saved page shows how many rates are currently stored.
+
+🔹 AI Assistance Disclosure (Required)
+Did you use AI tools? Yes
+
+Details:
+I used Claude to help implement the localStorage save/load logic, the duplicate-check system, and the saved-rates.html page structure. All design decisions, the overall aesthetic, and feature choices are by me.
+
+🔹 Learning Reflection (Short)
+I learned how localStorage works as a simple key-value store and how to serialize and deserialize JavaScript objects using JSON.stringify and JSON.parse. The most challenging part was designing a reliable duplicate-prevention system — using a composite key (from_to_amount) turned out to be the cleanest solution. I also gained experience in keeping a multi-page app in sync with a shared data source without using a real database.
