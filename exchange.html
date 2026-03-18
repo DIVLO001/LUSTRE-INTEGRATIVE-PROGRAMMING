@@ -301,6 +301,54 @@
 
       .result-error.visible { display: block; }
 
+      /* ---- SAVE BUTTON ---- */
+      .save-rate-btn {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        background: transparent;
+        border: 1px solid rgba(204,235,69,0.3);
+        color: var(--neon-green);
+        padding: 10px 22px;
+        font-size: 0.7rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        font-family: var(--font-main);
+        cursor: pointer;
+        border-radius: 1px;
+        transition: all 0.3s ease;
+        margin-top: 18px;
+        width: fit-content;
+      }
+
+      .save-rate-btn.visible { display: flex; }
+
+      .save-rate-btn:hover {
+        background: rgba(204,235,69,0.08);
+        border-color: var(--neon-green);
+        box-shadow: 0 0 20px rgba(204,235,69,0.1);
+      }
+
+      .save-rate-btn .btn-icon { font-size: 0.85rem; }
+
+      .view-saved-link {
+        display: inline-block;
+        margin-top: 0;
+        font-size: 0.68rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #444;
+        text-decoration: none;
+        transition: color 0.25s ease;
+        border-bottom: 1px solid transparent;
+        padding-bottom: 1px;
+      }
+
+      .view-saved-link:hover {
+        color: var(--neon-green);
+        border-bottom-color: var(--neon-green);
+      }
+
       /* ---- QUICK RATES CARD ---- */
       .quick-card {
         background: rgba(10, 10, 10, 0.4);
@@ -490,6 +538,7 @@
       </div>
       <div class="nav-links">
         <a href="index.html" class="nav-item">Home</a>
+        <a href="saved-rates.html" class="nav-item">Saved Rates</a>
         <a href="login.html" class="nav-item">Login</a>
       </div>
     </nav>
@@ -572,6 +621,16 @@
 
             <div class="result-error" id="result-error"></div>
 
+            <!-- SAVE BUTTON — shown only when result is visible -->
+            <button class="save-rate-btn" id="save-rate-btn" type="button">
+              <span class="btn-icon">⊕</span>
+              <span id="save-btn-label">SAVE RATE</span>
+            </button>
+
+            <a href="saved-rates.html" class="view-saved-link" id="view-saved-link" style="display:none;">
+              View all saved rates →
+            </a>
+
           </div>
         </div>
 
@@ -647,6 +706,8 @@
       var resultError   = document.getElementById('result-error');
       var quickGrid     = document.getElementById('quick-grid');
       var quickBaseLabel = document.getElementById('quick-base-label');
+      var saveRateBtn   = document.getElementById('save-rate-btn');
+      var viewSavedLink = document.getElementById('view-saved-link');
 
       /* ================================================================
          STEP 1: Fetch supported currencies list + initial rates
@@ -656,6 +717,8 @@
         populateSelectsFromKnown();
         // Fetch live rates for default base (USD)
         fetchRates('USD');
+        // Show saved-rates link if there are any saved items
+        updateViewSavedLink();
       }
 
       function populateSelectsFromKnown() {
@@ -747,11 +810,12 @@
             if (window.showError) window.showError(amountInput, 'Enter a valid positive number');
           }
           hideResult();
+          saveRateBtn.classList.remove('visible');
           return;
         }
         if (window.clearError) window.clearError(amountInput);
 
-        if (!from || !to) { hideResult(); return; }
+        if (!from || !to) { hideResult(); saveRateBtn.classList.remove('visible'); return; }
 
         // If base is different from current cached base, fetch new rates
         if (!allRates[from]) {
@@ -762,6 +826,7 @@
         var rates = allRates[from];
         if (!rates[to]) {
           showResultError('No rate available for ' + to + '.');
+          saveRateBtn.classList.remove('visible');
           return;
         }
 
@@ -782,13 +847,15 @@
         resultWrap.classList.add('visible');
 
         setTimeout(function() {
-          var fromName = CURRENCY_NAMES[from] || from;
-          var toName   = CURRENCY_NAMES[to]   || to;
           resultEq.textContent  = amount.toLocaleString() + ' ' + from + ' =';
           resultBig.textContent = formatted + ' ' + to;
           resultRate.innerHTML  = '1 ' + from + ' = <span>' + rate.toFixed(6) + '</span> ' + to;
           resultBig.classList.remove('updating');
         }, 80);
+
+        // Show the Save button now that a result is displayed
+        saveRateBtn.classList.add('visible');
+        updateSaveButtonState();
 
         // Update quick rates if base changed
         if (from !== currentBase) {
@@ -844,6 +911,7 @@
         resultLoading.classList.add('visible');
         resultWrap.classList.remove('visible');
         resultError.classList.remove('visible');
+        saveRateBtn.classList.remove('visible');
       }
 
       function hideLoading() {
@@ -854,6 +922,7 @@
         resultLoading.classList.remove('visible');
         resultWrap.classList.remove('visible');
         resultError.classList.remove('visible');
+        saveRateBtn.classList.remove('visible');
       }
 
       function showResultError(msg) {
@@ -861,7 +930,107 @@
         resultWrap.classList.remove('visible');
         resultError.textContent = '⚠ ' + msg;
         resultError.classList.add('visible');
+        saveRateBtn.classList.remove('visible');
       }
+
+      /* ================================================================
+         LOCALSTORAGE — SAVE RATE
+         ================================================================ */
+      var LS_KEY = 'lustre_saved_rates';
+
+      function getSavedRates() {
+        try {
+          return JSON.parse(localStorage.getItem(LS_KEY)) || [];
+        } catch (e) {
+          return [];
+        }
+      }
+
+      function saveSavedRates(arr) {
+        localStorage.setItem(LS_KEY, JSON.stringify(arr));
+      }
+
+      /* Build a unique key for the current conversion to prevent duplicates */
+      function buildRateId(from, to, amount) {
+        return from + '_' + to + '_' + amount;
+      }
+
+      function isAlreadySaved(from, to, amount) {
+        var saved = getSavedRates();
+        var id = buildRateId(from, to, amount);
+        return saved.some(function(r) { return r.id === id; });
+      }
+
+      function updateSaveButtonState() {
+        var from   = fromSelect.value;
+        var to     = toSelect.value;
+        var amount = parseFloat(amountInput.value);
+        if (isAlreadySaved(from, to, amount)) {
+          document.getElementById('save-btn-label').textContent = 'ALREADY SAVED';
+          saveRateBtn.style.borderColor = 'rgba(204,235,69,0.15)';
+          saveRateBtn.style.color = '#555';
+          saveRateBtn.style.cursor = 'default';
+        } else {
+          document.getElementById('save-btn-label').textContent = 'SAVE RATE';
+          saveRateBtn.style.borderColor = 'rgba(204,235,69,0.3)';
+          saveRateBtn.style.color = 'var(--neon-green)';
+          saveRateBtn.style.cursor = 'pointer';
+        }
+      }
+
+      function updateViewSavedLink() {
+        var saved = getSavedRates();
+        if (saved.length > 0) {
+          viewSavedLink.style.display = 'inline-block';
+          viewSavedLink.textContent = 'View all saved rates (' + saved.length + ') →';
+        } else {
+          viewSavedLink.style.display = 'none';
+        }
+      }
+
+      saveRateBtn.addEventListener('click', function() {
+        var from   = fromSelect.value;
+        var to     = toSelect.value;
+        var amount = parseFloat(amountInput.value);
+
+        if (!from || !to || isNaN(amount) || amount < 0) return;
+
+        // Prevent duplicates
+        if (isAlreadySaved(from, to, amount)) {
+          if (window.showToast) showToast('This rate is already saved.', 'error');
+          return;
+        }
+
+        if (!allRates[from] || !allRates[from][to]) return;
+
+        var rate      = allRates[from][to];
+        var converted = amount * rate;
+        var formatted;
+        if (converted >= 1000000)    formatted = (converted / 1000000).toFixed(2) + 'M';
+        else if (converted >= 10000) formatted = converted.toLocaleString('en-US', { maximumFractionDigits: 2 });
+        else if (converted >= 1)     formatted = converted.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 });
+        else                         formatted = converted.toPrecision(4);
+
+        var entry = {
+          id:         buildRateId(from, to, amount),
+          from:       from,
+          fromName:   CURRENCY_NAMES[from] || from,
+          to:         to,
+          toName:     CURRENCY_NAMES[to] || to,
+          amount:     amount,
+          rate:       rate,
+          converted:  formatted,
+          savedAt:    new Date().toLocaleString('en-PH', { timeZone: 'Asia/Manila' })
+        };
+
+        var saved = getSavedRates();
+        saved.unshift(entry); // newest first
+        saveSavedRates(saved);
+
+        if (window.showToast) showToast('Rate saved successfully!', 'success');
+        updateSaveButtonState();
+        updateViewSavedLink();
+      });
 
       /* ================================================================
          EVENT LISTENERS
@@ -869,7 +1038,6 @@
 
       // Auto-convert on dropdown change
       fromSelect.addEventListener('change', function() {
-        // Fetch new rates for new base if needed
         var base = fromSelect.value;
         if (!allRates[base]) {
           fetchRates(base);
@@ -896,7 +1064,6 @@
         fromSelect.value = toSelect.value;
         toSelect.value   = tmp;
 
-        // Fetch new base if needed, then convert
         var newBase = fromSelect.value;
         if (!allRates[newBase]) {
           fetchRates(newBase);
