@@ -480,6 +480,126 @@
         100% { background-position: -200% 0; }
       }
 
+      /* ---- COUNTRY INFO PANELS ---- */
+      .country-row {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 20px;
+        align-items: stretch;
+        margin-bottom: 25px;
+      }
+
+      .country-panel {
+        background: rgba(10,10,10,0.4);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 1px;
+        padding: 22px 26px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        position: relative;
+        overflow: hidden;
+        min-height: 90px;
+        transition: border-color 0.3s ease;
+      }
+
+      .country-panel::before {
+        content: '';
+        position: absolute;
+        bottom: 0; left: 0;
+        width: 0; height: 1px;
+        background: var(--neon-green);
+        transition: width 0.4s ease;
+      }
+
+      .country-panel.loaded::before { width: 100%; }
+
+      .country-flag {
+        font-size: 2.4rem;
+        line-height: 1;
+        flex-shrink: 0;
+        filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+      }
+
+      .country-flag.loading-flag {
+        width: 2.4rem;
+        height: 2rem;
+        background: linear-gradient(90deg, #1a1a1a 25%, #222 50%, #1a1a1a 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.2s infinite;
+        border-radius: 2px;
+      }
+
+      .country-info {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        min-width: 0;
+      }
+
+      .country-name {
+        font-size: 0.8rem;
+        color: white;
+        letter-spacing: 1px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-weight: 600;
+      }
+
+      .country-region {
+        font-size: 0.62rem;
+        color: #555;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+      }
+
+      .country-currency-name {
+        font-size: 0.62rem;
+        color: var(--neon-green);
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        opacity: 0.7;
+      }
+
+      .country-swap-center {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #2a2a2a;
+        font-size: 0.7rem;
+        letter-spacing: 2px;
+      }
+
+      .country-panel-loading {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .country-panel-loading .mini-ring {
+        width: 14px; height: 14px;
+      }
+
+      .country-panel-loading span {
+        font-size: 0.62rem;
+        color: #333;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+      }
+
+      /* multi-country stacked flags for currencies shared by many countries */
+      .country-flag-multi {
+        font-size: 1.1rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px;
+        max-width: 70px;
+        flex-shrink: 0;
+      }
+
       /* ---- INFO STRIP ---- */
       .info-strip {
         display: flex;
@@ -547,9 +667,9 @@
       <div class="exchange-container">
 
         <div class="exchange-header">
-          <div class="admin-badge">API</div>
+          <div class="admin-badge">DUAL API</div>
           <h1>EXCHANGE RATES</h1>
-          <p>Live currency conversion via ExchangeRate-API</p>
+          <p>Live currency conversion + country intelligence</p>
         </div>
 
         <!-- Converter Card -->
@@ -634,6 +754,23 @@
           </div>
         </div>
 
+        <!-- Country Info Row (REST Countries API) -->
+        <div class="country-row" id="country-row" style="display:none;">
+          <div class="country-panel" id="from-country-panel">
+            <div class="country-panel-loading">
+              <div class="mini-ring"></div>
+              <span>Loading country…</span>
+            </div>
+          </div>
+          <div class="country-swap-center">VS</div>
+          <div class="country-panel" id="to-country-panel">
+            <div class="country-panel-loading">
+              <div class="mini-ring"></div>
+              <span>Loading country…</span>
+            </div>
+          </div>
+        </div>
+
         <!-- Quick Rates Card -->
         <div class="quick-card" id="quick-card">
           <div class="quick-card-header">
@@ -648,7 +785,9 @@
 
         <!-- Info strip -->
         <div class="info-strip">
-          <span class="info-strip-left">Source: <strong>ExchangeRate-API (open.er-api.com)</strong> — free tier, updates daily</span>
+          <span class="info-strip-left">
+            Rates: <strong>ExchangeRate-API</strong> (open.er-api.com) · Countries: <strong>REST Countries API</strong> (restcountries.com)
+          </span>
           <span class="info-strip-right">Click a quick rate to set as target</span>
         </div>
 
@@ -1089,9 +1228,107 @@
       });
 
       /* ================================================================
+         REST COUNTRIES API — country info per currency code
+         https://restcountries.com/v3.1/currency/{code}
+         Free, no API key required
+         ================================================================ */
+
+      var countryCache = {};  // keyed by currency code
+      var countryRow   = document.getElementById('country-row');
+      var fromPanel    = document.getElementById('from-country-panel');
+      var toPanel      = document.getElementById('to-country-panel');
+
+      function fetchCountryByCurrency(code) {
+        if (countryCache[code]) {
+          return Promise.resolve(countryCache[code]);
+        }
+        return fetch('https://restcountries.com/v3.1/currency/' + code + '?fields=name,flag,region,subregion,currencies')
+          .then(function(res) {
+            if (!res.ok) throw new Error('not found');
+            return res.json();
+          })
+          .then(function(data) {
+            countryCache[code] = data; // cache it
+            return data;
+          })
+          .catch(function() {
+            countryCache[code] = null;
+            return null;
+          });
+      }
+
+      function renderCountryPanel(panel, code) {
+        panel.classList.remove('loaded');
+        panel.innerHTML =
+          '<div class="country-panel-loading">' +
+            '<div class="mini-ring"></div>' +
+            '<span>Identifying country…</span>' +
+          '</div>';
+
+        fetchCountryByCurrency(code).then(function(countries) {
+          if (!countries || countries.length === 0) {
+            panel.innerHTML =
+              '<div class="country-info">' +
+                '<span class="country-name">' + code + '</span>' +
+                '<span class="country-region">No country data available</span>' +
+              '</div>';
+            return;
+          }
+
+          // Some currencies (EUR, XOF, etc.) belong to many countries — show up to 4 flags
+          var primary   = countries[0];
+          var currName  = primary.currencies && primary.currencies[code]
+                          ? primary.currencies[code].name
+                          : code;
+
+          var flagHtml;
+          if (countries.length === 1) {
+            flagHtml = '<div class="country-flag">' + primary.flag + '</div>';
+          } else {
+            // Multi-country currency: show stacked mini flags
+            var flags = countries.slice(0, 6).map(function(c) { return c.flag; }).join(' ');
+            flagHtml = '<div class="country-flag-multi">' + flags + '</div>';
+          }
+
+          var countryLabel = countries.length === 1
+            ? primary.name.common
+            : primary.name.common + ' +' + (countries.length - 1) + ' more';
+
+          var regionLabel = primary.subregion || primary.region || '—';
+
+          panel.innerHTML =
+            flagHtml +
+            '<div class="country-info">' +
+              '<span class="country-name">' + countryLabel + '</span>' +
+              '<span class="country-region">' + regionLabel + '</span>' +
+              '<span class="country-currency-name">' + currName + '</span>' +
+            '</div>';
+
+          panel.classList.add('loaded');
+        });
+      }
+
+      function updateCountryPanels() {
+        var from = fromSelect.value;
+        var to   = toSelect.value;
+        if (!from || !to) return;
+
+        countryRow.style.display = 'grid';
+        renderCountryPanel(fromPanel, from);
+        renderCountryPanel(toPanel,   to);
+      }
+
+      /* Hook into existing currency change events */
+      fromSelect.addEventListener('change', updateCountryPanels);
+      toSelect.addEventListener('change',   updateCountryPanels);
+
+      /* ================================================================
          BOOT
          ================================================================ */
+      // Render country panels on boot after selects are populated
       init();
+      // Slight delay to let selects populate first
+      setTimeout(updateCountryPanels, 400);
     </script>
   </body>
 </html>
